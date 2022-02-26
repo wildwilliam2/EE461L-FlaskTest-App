@@ -82,8 +82,15 @@ class DatabaseImpl:
             return -1
         else: 
             return 0
-           
-           
+            
+    # Input: userid
+    # Output: Signal telling Success/failure ( initially not necessary)
+    # Purpose: Remove a user document/post from UserCollection
+    def removeUser(self, userid):
+        # Deletes the document if there is one, does nothing otherwise
+        self.__db.UserCollection.delete_one({"name" : name})
+        return 0       
+        
     '''Hardware methods'''
     # Input:   name, capacity
     # Output:  Singal telling whether or not hardware post was successful
@@ -161,7 +168,16 @@ class DatabaseImpl:
                 values = {"$set": {"availability" : hardware["capacity"]}}
                 self.__db.HardwareCollection.update_one({"name" : name}, values)
                 return 0
-    
+                
+    # Input: name
+    # Output: Signal telling Success/failure ( initially not necessary)
+    # Purpose: Remove a hardwareset document/post from HardwareCollection
+    def removeHardware(self, name):
+        # Deletes the document if there is one, does nothing otherwise
+        self.__db.HardwareCollection.delete_one({"name" : name})
+        return 0
+        
+            
     '''Project Methods'''
     # Input: name - name of the project, description- a string, projectid -  number to identify the project
     # Output: Singal telling whether the insertion was a success or failure
@@ -195,8 +211,16 @@ class DatabaseImpl:
             return query
         else:
             return None
-	   
-	      
+            
+    # Input: projectid - id of the project 
+    # Output: Signal telling Success/failure ( initially not necessary)
+    # Purpose: Remove a project document/post from ProjectCollection
+    def removeProject(self, projectid):
+        # Deletes the document if there is one, does nothing otherwise
+        self.__db.ProjectCollection.delete_one({"projectid" : projectid})
+        return 0
+        
+        
     '''Other Methods'''	
     # Input: None
     # Output: None
