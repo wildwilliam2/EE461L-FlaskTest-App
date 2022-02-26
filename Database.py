@@ -1,3 +1,10 @@
+'''
+	File: Database.py
+	Purpose: API for Database Transactions for the EE 461L Avengineers project
+	Author(s):  David, William, Julian
+	Last Edit: 2/26/2022 
+'''
+
 from pymongo import MongoClient
 import Encryptor
 

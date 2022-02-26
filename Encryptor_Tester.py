@@ -1,5 +1,10 @@
+'''
+	File: Encryptor_Tester.py
+	Purpose: Test the functionality of teh methods in Encryptor.py
+	Author(s):  William
+	Last Edit: 2/26/2022 
+'''
 import Encryptor as e
-import Database as DB
 
 # Input: None
 # Output: None
@@ -24,20 +29,9 @@ def test_encryptor():
 	print("Done testing the encryption class")
 	return
 	
-	
-# Input: None
-# Output: None
-# Purpose: Test the functionality of Database.py
-def test_database():
-	return
-	
-
 def main():
 	print("Testing the Encryptor.py functions")
 	test_encryptor()
-	print("Testing the Database.py functions")
-	test_database()
-	
 	
 if __name__ == "__main__":
 	main()
