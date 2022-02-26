@@ -4,7 +4,7 @@ class Encryption:
         self.__N = N
         self.__D = D
 
-    def encrypt(inputText):
+    def encrypt(self, inputText):
         reversedText = inputText[::-1]
         alteredText = []
         alteredString = ''
@@ -23,7 +23,7 @@ class Encryption:
     
         return alteredString
     
-    def decrypt(inputText):
+    def decrypt(self,inputText):
         reversedText = inputText[::-1]
         alteredText = []
         alteredString = ''

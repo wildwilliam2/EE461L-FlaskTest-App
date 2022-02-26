@@ -6,6 +6,8 @@ class DatabaseImpl:
     def __init__(self):
         client = MongoClient("mongodb+srv://avengineers461L:MwycDXNBxKObOc3I@cluster0.s12ua.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
         
+        self.myClient = client
+        
         self.__db = client.Project461L
         passMe = "LGowXavJ2MZhq50RhqVD"
         
@@ -110,8 +112,7 @@ class DatabaseImpl:
                 values = {"$set": {"availability" : hardware["capacity"]}}
                 self.__db.HardwareCollection.update_one({"name" : name}, values)
                 return 0
-     
-        #project methods
+
     def createProject(self, name, description, projectid):
         if(self.__db.ProjectCollection.find_one({"projectid":projectid}) != None):
                 print("Error: Nonunique Project ID.")
@@ -127,11 +128,18 @@ class DatabaseImpl:
         else:
             print("Error: project was not successfully put in the database.")
             return -1
-              
+           
+    
     def getProject(self, projectid):
         if(self.__db.ProjectCollection.find_one({"projectid":projectid}) != None):
             query = self.__db.ProjectCollection.find_one({"projectid":projectid})
             return query
+
+    def closeClient(self):
+        self.myClient.close()
+       
+       
+       
          
         
         
