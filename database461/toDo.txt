@@ -1,0 +1,6 @@
+verify database.py
+verify encrypt
+exapnd encrypt
+
+*create a list inside Project Docs in the database that lists what users can access it
+and then maybe on the GUI end, a way for people who create/are in projects to add other users?
