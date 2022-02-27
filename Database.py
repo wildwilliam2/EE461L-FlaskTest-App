@@ -34,7 +34,7 @@ class DatabaseImpl:
         
         # Check if there is a user with the id given in the database
         if(self.__db.UserCollection.find_one({"userid":encryptedUserID}) != None):
-            print("Error: Nonunique user id.")
+            #print("Error: Nonunique user id.")
             return -1
         # Create the new user post/document
         userDoc = {
@@ -46,11 +46,11 @@ class DatabaseImpl:
         self.__db.UserCollection.insert_one(userDoc)
         
         #If the post was sucessfully inserted, then return with no errors
-        if(self.__db.UserCollection.find_one({"userid":userid}) != None):
+        if(self.__db.UserCollection.find_one({"userid": encryptedUserID}) != None):
                return 0
         else:
             #Otherwise signify there was an error
-            print("Error: user was not successfully put in the database.")
+            #print("Error: user was not successfully put in the database.")
             return -1
         
     # Input: userid
@@ -60,12 +60,12 @@ class DatabaseImpl:
     	
         encryptedUserID = self.__encryptor.encrypt(userid)
         # Returns a dictionary associated with the encrypted userid if one exists
-        query = self__db.UserCollection.find_one({"userid":encryptedUserID})
+        query = self.__db.UserCollection.find_one({"userid": encryptedUserID})
         if query != None:
             return query
         else:
             # Return Nothing if no user found
-            print("Error: a user with this id was not found in the database.")
+            #print("Error: a user with this id was not found in the database.")
             return None
             
     # Input: userid, a password to check
@@ -94,9 +94,11 @@ class DatabaseImpl:
     # Output: Signal telling Success/failure ( initially not necessary)
     # Purpose: Remove a user document/post from UserCollection
     def removeUser(self, userid):
+        encryptedUserid = self.__encryptor.encrypt(userid)
         # Deletes the document if there is one, does nothing otherwise
-        self.__db.UserCollection.delete_one({"name" : name})
+        self.__db.UserCollection.delete_one({"userid" : encryptedUserid})
         return 0       
+        
         
     '''Hardware methods'''
     # Input:   name, capacity
@@ -105,34 +107,33 @@ class DatabaseImpl:
     def createHardwareSet(self, name, capacity):
         # If the hardware set witht this name already exists, return a failure signal
         if(self.__db.HardwareCollection.find_one({"name":name}) != None):
-            print("Error: Nonunique hardware set name.")
+            #print("Error: Nonunique hardware set name.")
             return -1
             
         # Create new hardware post/document 
-        hardwareDoc = {
+        hardwareDoc = {"name" : name,
                       "capacity" : capacity,
-                      "availability" : capacity,
-                      "name" : name
+                      "availability" : capacity
                          }
         # Insert ethe new hardware post/document into the Hardware Collection
         self.__db.HardwareCollection.insert_one(hardwareDoc)
-        # If the insertion was successul return a sucess signal, otherwise a failure signal
-        if(self.__db.HardwardCollection.find_one({"name":name}) != None):
+        # If the insertion was successul return a success signal, otherwise a failure signal
+        if(self.__db.HardwareCollection.find_one({"name": name}) != None):
             return 0
         else:
-            print("Error: user was not successfully put in the database.")
+            #print("Error: hardware was not successfully put in the database.")
             return -1
            
     # Input: name
     # Output: Hardware Collection entry associated with 'name' or None if it does not exist
     # Purpose: Retreival of hardwareset data
     def getHardwareSet(self, name):
-        query = self__db.HardwareCollection.find_one({"name":name})
+        query = self.__db.HardwareCollection.find_one({"name":name})
         # If there is an entry in the hardware collection with the specified name return it, otherwise return none
         if query != None:
                return query
         else:
-               print("Error: a hardware set with this name was not found in the database.")
+               #print("Error: a hardware set with this name was not found in the database.")
                return None
     # Input: name - name of the hardwarset, qty - amount being requested 
     # Output: signal telling the sucess or failure of the operation
@@ -149,6 +150,7 @@ class DatabaseImpl:
         else:
             # If there is enough availability to service the request, subtract that amount, return success
             if(qty <= hardware["availability"]):
+                availability = hardware["availability"]
                 values = {"$set": {"availability" : availability-qty} }
                 self.__db.HardwareCollection.update_one( {"name" : name}, values)
                 return 0
@@ -163,11 +165,15 @@ class DatabaseImpl:
     # Purpose: Check in the specified quantity from the hardware set specified by name     
     def returnHardware(self, name, qty):
         hardware = self.getHardwareSet(name)
+        # If there is no hardware entry by that name
+        if hardware == None:
+             return -1
         if(qty<0):
                 print("Invalid. check-in quantity must be a nonnegative number.")
                 return -1
         else:
             if(qty <= hardware["capacity"] - hardware["availability"]):
+                availability = hardware["availability"]
                 values = {"$set": {"availability" : availability+qty}}
                 self.__db.HardwareCollection.update_one({"name" : name}, values)
                 return 0
@@ -192,7 +198,7 @@ class DatabaseImpl:
     def createProject(self, name, description, projectid):
         # If there already is a project with this project id, return a failure signal
         if(self.__db.ProjectCollection.find_one({"projectid":projectid}) != None):
-                print("Error: Nonunique Project ID.")
+                #print("Error: Nonunique Project ID.")
                 return -1
         # Otherwise, Create a new project document/post
         projectDoc = {
@@ -206,7 +212,7 @@ class DatabaseImpl:
         if(self.__db.ProjectCollection.find_one({"projectid":projectid}) != None):
             return 0
         else:
-            print("Error: project was not successfully put in the database.")
+            #print("Error: project was not successfully put in the database.")
             return -1
            
     # Input: projectid
