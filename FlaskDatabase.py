@@ -41,6 +41,14 @@ db = Database.DatabaseImpl()
         resourcesToTake = request.form['request']
         verify = db.requestHardware(name, resourcesToTake)
         return verify
+        
+#return resources to hardware sets in the same way.    
+@app.route("returnResources", methods = ["POST"])
+    def returnresource():
+        name = request.form['name']
+        resourcesToReturn = request.form['return']
+        verify = db.returnHardware(name, resourcesToReturn)
+        return verify
 #at this URL, flask will pass a list containing dictionaries with all current hardware sets names, availability, and capacity. This url can therefore be used to have a 
 #dynamically updating page with the hardware on it. This list is jsonified when returned.
 @app.route("/hardware", methods = ["GET"])
