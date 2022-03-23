@@ -181,6 +181,17 @@ class DatabaseImpl:
                 values = {"$set": {"availability" : hardware["capacity"]}}
                 self.__db.HardwareCollection.update_one({"name" : name}, values)
                 return 0
+    #Input: none
+    #Output: a full list of every hardware set in the database.
+    #Purpose: a method to give everything to the client via flask for dynamic updates.
+    def hardwareSetList(self):
+        mylist = []
+        
+        for hardware in self.__db.HardwareCollection.find():
+            mylist.append(hardware)
+        
+        return mylist
+        
                 
     # Input: name
     # Output: Signal telling Success/failure ( initially not necessary)
@@ -232,6 +243,17 @@ class DatabaseImpl:
         # Deletes the document if there is one, does nothing otherwise
         self.__db.ProjectCollection.delete_one({"projectid" : projectid})
         return 0
+    
+    #input: nothing
+    #output: a list of every project in the database.
+    #purpose: a method in python flask allowing for dynamic updates to the project list.
+    def projectList(self):
+        mylist = []
+        
+        for project in self.__db.ProjectCollection.find():
+            mylist.append(project)
+        
+        return mylist
         
         
     '''Other Methods'''	
