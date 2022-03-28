@@ -10,6 +10,9 @@ db = Database.DatabaseImpl()
 @app.route("/"):
     def index():
         return app.send_static_file('index.html')
+@app.errorhandler(404)
+def not_found(e):
+        return app.send_static_file('index.html')
 @app.route("/verifyuser", methods = ["POST"])
     def verifyuser():
             myrequest = request.get_json(force=True)
@@ -82,5 +85,6 @@ db = Database.DatabaseImpl()
     return 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0
+           , debug = False, port=os.environ.get('PORT', 80))
 
