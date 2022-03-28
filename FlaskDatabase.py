@@ -1,78 +1,85 @@
 import Database
 from flask import Flask, jsonify, redirect, url_for, request, render_template
 import os
+import json
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='./project/build/', static_url_path='/')
 db = Database.DatabaseImpl()
 #verifies that the username and password are valid, retrieved from the request form. If successful returns 0.
+@app.route("/"):
+    def index():
+        return app.send_static_file('index.html')
 @app.route("/verifyuser", methods = ["POST"])
     def verifyuser():
-            username = request.form['userid']
-            password = request.form['password']
+            myrequest = request.get_json(force=True)
+            username = myrequest['userid']
+            password = myrequest['password']
             if(db.validateUser(username, password) == 0)
-                return true
+                return {'valid' : true}
             else
-                return false
+                return {'valid' : false}
 #creates a user with the userid and password given in the request form. If successful returns 0.
 @app.route("/createuser", methods = ["POST"])
     def createuser():
-        
-        username = request.form['userid']
-        password = request.form['password']
+        myrequest = request.get_json(force=True)
+        username = myrequest['userid']
+        password = myrequest['password']
         
         verify = db.createUser(username, password)
         
-        return verify
+        return {'errorcode': verify}
 #creates a hardware set with the name and capacity given in the request form. If successful returns 0. 
 @app.route("/createHWSet", methods = ["POST"])
     def createhwset():
-           
-        name = request.form['name']
-        capacity = request.form['capacity']
+        myrequest = request.get_json(force=True)
+        name = myrequest['name']
+        capacity = myrequest['capacity']
         verify = db.createHardwareSet(name, capacity)
         
-        return verify
+        return {'errorcode': verify}
 #requests resources from the hardware sets, taking a certain number from the hardware set named in the request form. If successful returns 0.
 @app.route("/requestResources", methods = ["POST"])
     def requestresource():
-        
-        name = request.form['name']
-        resourcesToTake = request.form['request']
+        myrequest = request.get_json(force=True)
+        name = myrequest['name']
+        resourcesToTake = myrequest['request']
         verify = db.requestHardware(name, resourcesToTake)
-        return verify
+        return {'errorcode': verify}
         
 #return resources to hardware sets in the same way.    
-@app.route("returnResources", methods = ["POST"])
+@app.route("/returnResources", methods = ["POST"])
     def returnresource():
-        name = request.form['name']
-        resourcesToReturn = request.form['return']
+        myrequest = request.get_json(force=True)
+        name = myrequest['name']
+        resourcesToReturn = myrequest['return']
         verify = db.returnHardware(name, resourcesToReturn)
-        return verify
+        return {'errorcode': verify}
 #at this URL, flask will pass a list containing dictionaries with all current hardware sets names, availability, and capacity. This url can therefore be used to have a 
 #dynamically updating page with the hardware on it. This list is jsonified when returned.
-@app.route("/hardware", methods = ["GET"])
+@app.route("/hardwarelist", methods = ["GET"])
     def hardware():
-        return jsonify(result = db.hardwareSetList())
+        return json.dumps(db.hardwareSetList())
 
     
 #this method allows the client to create a project. It takes a name, description, and projectid from the form, and creates the project in the database. If successful returns 0.
 @app.route("/createProject", methods = ["POST"])
-        name = request.form['name']
-        description = request.form['description']
-        projectid = request.form['projectid']
+        myrequest = request.get_json(force=True)
+        name = myrequest['name']
+        description = myrequest['description']
+        projectid = myrequest['projectid']
         
         verify = db.createProject(name, description, projectid)
-        return verify
+        return {'errorcode' : verify}
 #at this URL, flask will pass a list containing dictionaries with all current projects,
 #names, availability, and capacity. This url can therefore be used to have a dynamically updating page with the hardware on it. This list is jsonified when returned.
-@app.route("/projects", methods = ["GET"])
-        return jsonify(result = db.projectList())
+@app.route("/projectlist", methods = ["GET"])
+        return json.dumps(db.projectList())
 
 #this method closes the database. It could be ideally implemented with a button that closes the user session gracefully.
 @app.route("/close")
     db.closeClient()
-    return 0
+    return 
 
 if __name__ == "__main__":
     app.run()
