@@ -131,10 +131,10 @@ class DatabaseImpl:
         query = self.__db.HardwareCollection.find_one({"name":name})
         # If there is an entry in the hardware collection with the specified name return it, otherwise return none
         if query != None:
-               return query
+            return query
         else:
                #print("Error: a hardware set with this name was not found in the database.")
-               return None
+            return None
     # Input: name - name of the hardwarset, qty - amount being requested 
     # Output: signal telling the sucess or failure of the operation
     # Purpose: Check out the specified quantity from the hardware set specified by name

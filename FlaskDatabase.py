@@ -63,10 +63,20 @@ def not_found(e):
 @app.route("/hardwarelist", methods = ["GET"])
     def hardware():
         return json.dumps(db.hardwareSetList())
+    
+    
+#returns a specific hardware set as jsonified, with an input being its name.    
+@app.route("/getHardwareSet", methods = ["POST"])
+def gethardwareset():
+    myrequest = request.get_json(force=True)
+    name = myrequest['name']
+    hardwareSet = db.getHardwareSet(name)
+    return jsonify(hardwareSet)
 
     
 #this method allows the client to create a project. It takes a name, description, and projectid from the form, and creates the project in the database. If successful returns 0.
 @app.route("/createProject", methods = ["POST"])
+def createproject():
         myrequest = request.get_json(force=True)
         name = myrequest['name']
         description = myrequest['description']
@@ -74,13 +84,24 @@ def not_found(e):
         
         verify = db.createProject(name, description, projectid)
         return {'errorcode' : verify}
+    
+#returns a specific project as jsonified, with an input being its name.
+@app.route('/getProject', methods = ["POST"])
+def getproject():
+    myrequest = request.get_json(force=True)
+    name = myrequest['name']
+    project = db.getProject(name)
+    return jsonify(project)
+
 #at this URL, flask will pass a list containing dictionaries with all current projects,
 #names, availability, and capacity. This url can therefore be used to have a dynamically updating page with the hardware on it. This list is jsonified when returned.
 @app.route("/projectlist", methods = ["GET"])
+def getprojectlist():
         return json.dumps(db.projectList())
 
 #this method closes the database. It could be ideally implemented with a button that closes the user session gracefully.
 @app.route("/close")
+def closeclient():
     db.closeClient()
     return 
 
