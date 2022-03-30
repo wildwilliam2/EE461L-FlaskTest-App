@@ -10,7 +10,7 @@ export default function App() {
               <div className = "App">
                   <Routes>
                      <Route path = "/" element = {<Home />} />
-                     <Route path = "LoginPortal" element = {<LoginPortal/>} />
+                     <Route exact path = "/login" element = {<LoginPortal/>} />
                      <Route path = "Hardware" element ={<Hardware />} />
                      <Route path = "Project" element = {<Project/>} />
                   </Routes>
