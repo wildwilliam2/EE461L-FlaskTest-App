@@ -11,9 +11,9 @@ def verifyuser():
     username = request.form['userid']
     password = request.form['password']
     if(db.validateUser(username, password) == 0):
-        return true
+        return True
     else:
-        return false
+        return False
 #creates a user with the userid and password given in the request form. If successful returns 0.
 @app.route("/createuser", methods = ["POST"])
 def createuser():
