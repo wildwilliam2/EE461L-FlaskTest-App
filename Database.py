@@ -142,9 +142,9 @@ class DatabaseImpl:
         hardware = self.getHardwareSet(name)
         # If there is no hardware set, signal failure
         if hardware == None:
-        	return -1
+            return -1
         #  If the user is asking for less than zero, return failure
-        if(qty <0):
+        if qty < 0:
             print("Invalid. Checkout quantity must be a nonnegative number.")
             return -1
         else:
