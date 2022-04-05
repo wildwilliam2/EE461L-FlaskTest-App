@@ -201,6 +201,88 @@ class DatabaseImpl:
         self.__db.HardwareCollection.delete_one({"name" : name})
         return 0
         
+    #input: name of hardwareset, projectid, amount to take, "checkout"/"checkin" as strings to pick operation.
+    #output: error code indicating success or failure. 
+    #purpose: give projects resources or take them away.
+    def hardwareToProject(self, hardwareName, projectid, qty, inout):
+        hardware = self.getHardwareSet(hardwareName)
+        project = self.getProject(projectid)
+        if (inout == "checkout"):
+            
+        # If there is no hardware set, signal failure
+            if (hardware == None) or (project == None):
+                return -1
+        #  If the user is asking for less than zero, return failure
+            if(qty <0):
+                print("Invalid. Checkout quantity must be a nonnegative number.")
+                return -1
+            else:
+            # If there is enough availability to service the request, subtract that amount, return success
+                if(qty <= hardware["availability"]):
+                    availability = hardware["availability"]
+                    currenthardware = project["hardware"]
+                    values = {"$set": {"availability" : availability-qty} }
+                    newhw = {"$set": {"hardware" : qty+currenthardware} }
+                    self.__db.HardwareCollection.update_one( {"name" : name}, values)
+                    self.__db.ProjectCollection.update_one( {"projectid" : projectid}, newhw)
+                    return 0
+                else:
+            # Otherwise, there is not, checkout whatever is left by setting avail to 0, return success
+                    availability = hardware["availability"]
+                    currenthardware = project["hardware"]
+                    values = {"$set": {"availability" : 0}}
+                    newhw = {"$set": {"hardware" : currenthardware + availability} }
+                    self.__db.HardwareCollection.update_one( {"name" : name}, values)
+                    return 0
+        else:
+                if (hardware == None) or (project == None):
+                     return -1
+            
+            availability = hardware["availability"]
+            capacity = hardware["capacity"]
+            currenthardware = project["hardware"]
+            
+            if(qty<0):
+                print("Invalid. check-in quantity must be a nonnegative number.")
+                return -1
+            else:
+                if(qty <= currenthardware):
+                    #check if you can return this much safely.
+                    if(qty <= capacity - availability):
+                        #add qty to availability, subtract qty from currenthardware.
+                        values = {"$set": {"availability" : availability+qty} }
+                        newhw = {"$set": {"hardware" : currenthardware-qty} }
+                        self.__db.HardwareCollection.update_one( {"name" : name}, values)
+                        self.__db.ProjectCollection.update_one( {"projectid" : projectid}, newhw)
+                        return 0
+                    else:
+                        #can't return all of it, so return as much as you can.
+                        values = {"$set": {"availability" : capacity}}
+                        newhw = {"$set": {"hardware" : currenthardware - (capacity-availability)} }
+                        self.__db.HardwareCollection.update_one({"name" : name}, values)
+                        self.__db.ProjectCollection.update_one( {"projectid" : projectid}, newhw)
+                        return 0
+                        
+                    
+                else:
+                    #check if you can return this much safely.
+                    if(currenthardware <= capacity - availability):
+                        #add qty to availability, subtract qty from currenthardware.
+                        values = {"$set": {"availability" : availability+currenthardware} }
+                        newhw = {"$set": {"hardware" : 0} }
+                        self.__db.HardwareCollection.update_one( {"name" : name}, values)
+                        self.__db.ProjectCollection.update_one( {"projectid" : projectid}, newhw)
+                        return 0
+                    else:
+                        #can't return all of it, so return as much as you can.
+                        values = {"$set": {"availability" : capacity}}
+                        newhw = {"$set": {"hardware" : currenthardware - (capacity-availability)} }
+                        self.__db.HardwareCollection.update_one({"name" : name}, values)
+                        self.__db.ProjectCollection.update_one( {"projectid" : projectid}, newhw)
+                        return 0
+                        
+                    
+            
             
     '''Project Methods'''
     # Input: name - name of the project, description- a string, projectid -  number to identify the project
@@ -216,6 +298,7 @@ class DatabaseImpl:
                    "name":name,
                    "description":description,
                    "projectid":projectid
+                   "hardware":0
            }
         # Insert the project document/post
         self.__db.ProjectCollection.insert_one(projectDoc)

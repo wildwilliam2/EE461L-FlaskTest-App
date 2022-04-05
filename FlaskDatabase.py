@@ -93,6 +93,17 @@ def getproject():
     project = db.getProject(name)
     return jsonify(project)
 
+#this method is used for hardware changes associated with a project. The inputs are the hardware set's name, the project's id, the quantity to add or remove, and the string "checkout" or "checkin" to specify whether to check in or out the amount specified.
+@app.route('/hardwareToProject', methods = ["POST"])
+    myrequest = request.get_json(force=True)
+    hardwareName = myrequest['hardwareName']
+    projectid = myrequest['projectid']
+    qty = myrequest['qty']
+    inout = myrequest['inout']
+    verify = db.hardwareToProject(hardwareName, projectid, qty, inout)
+    return {'errorcode' : verify}
+
+
 #at this URL, flask will pass a list containing dictionaries with all current projects,
 #names, availability, and capacity. This url can therefore be used to have a dynamically updating page with the hardware on it. This list is jsonified when returned.
 @app.route("/projectlist", methods = ["GET"])
