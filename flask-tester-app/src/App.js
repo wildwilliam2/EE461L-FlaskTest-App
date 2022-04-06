@@ -517,6 +517,104 @@ function GetProject()
     </>
   );
 }
+
+/* Moves hardware to and from a given project*/
+function CheckoutToProject()
+{
+  const [serverResponse, setServerResponse] = useState("No Response Yet");
+  const hardwareField = useRef();
+  const idField = useRef();
+  const amountField = useRef();
+  async function requestHardware()
+  {
+
+    let hardwareset = hardwareField.current.value;
+    let id = idField.current.value;
+    let amount = amountField.current.value;
+
+    console.log("Requesting hardware from a project");
+    console.log("The id of the project: " + id);
+    console.log("The amount: " + amount);
+    console.log("The name of the hardware set: " + hardwareset);
+    let dict = {
+      method : "POST",
+      body : JSON.stringify({
+        projectid : id,
+        hardwareName : hardwareset,
+        qty  : amount,
+        inout : "checkout"
+      })
+    };
+    let res = await fetch("/hardwareToProject" , dict);
+    let responseJson = await res.json();
+
+    if(responseJson['errorcode'] != 0)
+    {
+      setServerResponse("There was an error");
+    }
+    else{
+      setServerResponse("Request/Return did not produce an error");
+    }
+  }
+  async function returnHardware()
+  {
+    let hardwareset = hardwareField.current.value;
+    let id = idField.current.value;
+    let amount = amountField.current.value;
+
+    console.log("Returning hardware from a project");
+    console.log("The id of the project: " + id);
+    console.log("The amount: " + amount);
+    console.log("The name of the hardware set: " + hardwareset);
+
+    let dict = {
+      method : "POST",
+      body : JSON.stringify({
+        projectid : id,
+        hardwareName : hardwareset,
+        qty  : amount,
+        inout : "checkin"
+      })
+    };
+    let res = await fetch("/hardwareToProject" , dict);
+    let responseJson = await res.json();
+    
+    if(responseJson['errorcode'] != 0)
+    {
+      setServerResponse("There was an error");
+    }
+    else{
+      setServerResponse("Request/Return did not produce an error");
+    }
+  }
+
+  return(
+    <>
+      <h2> Move Resources to or from a project</h2>
+      <div>
+          <h3>Enter the projectid, the hardware set name and quantity of hardware to request/return</h3>
+          <input ref = {idField} type = "text" placeholder = "Enter the project id" size = "21"></input>
+        </div>
+        <div>
+          <input ref = {hardwareField} type = "text" placeholder = "Enter a hw name" size = "21"></input>
+        </div>
+        <div>
+          <input ref = {amountField} type = "text" placeholder = "Enter the amount"></input>
+        </div>
+        <div>
+          <button onClick = {() => returnHardware()}>Enter to return the amount</button>
+      </div>s
+      <div>
+        <button onClick = {() => requestHardware() } > Enter to request the amount</button>
+      </div>
+      <label>{serverResponse}</label>
+      
+    </>
+  );
+}
+
+
+
 function App() {
   return (
     <>
@@ -530,6 +628,7 @@ function App() {
       <RemoveHW/>
       <CreateProject/>
       <RemoveProject/>
+      <CheckoutToProject/>
     </>
   );
 }

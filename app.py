@@ -96,14 +96,14 @@ def removehwset():
     verify = db.removeHardware(name)
     return {'errorcode' : verify}
 
-#at this URL, flask will pass a list containing dictionaries with all current hardware sets names, availability, and capacity. This url can therefore be used to have a 
-#dynamically updating page with the hardware on it. This list is jsonified when returned.
+# At this URL, flask will pass a list containing dictionaries with all current hardware sets names, availability, and capacity. This url can therefore be used to have a 
+# dynamically updating page with the hardware on it. This list is jsonified when returned.
 @app.route("/hardwarelist", methods = ["GET"])
 def hardware():
     return json.dumps(db.hardwareSetList())
 
     
-#returns a specific hardware set as jsonified, with an input being its name.    
+# Returns a specific hardware set as jsonified, with an input being its name.    
 @app.route("/getHardwareSet", methods = ["POST"])
 def gethardwareset():
     myrequest = request.get_json(force=True)
@@ -112,7 +112,7 @@ def gethardwareset():
     return jsonify(hardwareSet)
 
     
-#this method allows the client to create a project. It takes a name, description, and projectid from the form, and creates the project in the database. If successful returns 0.
+# This method allows the client to create a project. It takes a name, description, and projectid from the form, and creates the project in the database. If successful returns 0.
 @app.route("/createProject", methods = ["POST"])
 def createproject():
         myrequest = request.get_json(force=True)
@@ -123,7 +123,7 @@ def createproject():
         verify = db.createProject(name, description, projectid)
         return {'errorcode' : verify}
     
-#returns a specific project as jsonified, with an input being its name.
+# Returns a specific project as jsonified, with an input being its name.
 @app.route('/getProject', methods = ["POST"])
 def getproject():
     myrequest = request.get_json(force=True)
@@ -131,8 +131,8 @@ def getproject():
     project = db.getProject(name)
     return jsonify(project)
 
-#at this URL, flask will pass a list containing dictionaries with all current projects,
-#names, availability, and capacity. This url can therefore be used to have a dynamically updating page with the hardware on it. This list is jsonified when returned.
+# At this URL, flask will pass a list containing dictionaries with all current projects,
+# names, availability, and capacity. This url can therefore be used to have a dynamically updating page with the hardware on it. This list is jsonified when returned.
 @app.route("/projectlist", methods = ["GET"])
 def getprojectlist():
         return json.dumps(db.projectList())
@@ -145,7 +145,24 @@ def removeProject():
     verify = db.removeProject(name)
     return {'errorcode' : verify}
 
-#this method closes the database. It could be ideally implemented with a button that closes the user session gracefully.
+# This method is used for hardware changes associated with a project. 
+# The inputs are the hardware set's name, the project's id, the quantity 
+# to add or remove, and the string "checkout" or "checkin" to specify 
+# whether to check in or out the amount specified.
+@app.route('/hardwareToProject', methods = ["POST"])
+def hardwareToProject():
+    myrequest = request.get_json(force=True)
+    hardwareName = myrequest['hardwareName']
+    projectid = myrequest['projectid']
+    try:
+        qty = int(myrequest['qty'])
+    except ValueError:
+        return {'errorcode' : -1}
+    inout = myrequest['inout']
+    verify = db.hardwareToProject(hardwareName, projectid, qty, inout)
+    return {'errorcode' : verify}
+
+# This method closes the database. It could be ideally implemented with a button that closes the user session gracefully.
 @app.route("/close")
 def closeclient():
     db.closeClient()
