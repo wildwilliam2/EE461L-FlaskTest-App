@@ -10,7 +10,7 @@ class Metadata:
         #4 metadata values
         self.metadata = {'Database': name,
                          'Description': desc,
-                         'Amount': num,
+                         'Entries': num,
                          'Unit': unit,
                          'Link': link}
     
