@@ -22,7 +22,8 @@ const [serverResponse, setServerResponse] = useState("No Response yet");
          method : "POST",
          body : JSON.stringify({
            userid: username,
-           password: password
+           password: password,
+           email: email
          })
        };
        let res = await fetch("/verifyuser" , dict);
