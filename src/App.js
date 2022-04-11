@@ -2,7 +2,7 @@ import React from "react";
 import {Routes, Route, Link} from "react-router-dom";
 import './App.css'
 import Hardware from "./hardware";
-import Project from "./project";
+import Project_Board from "./project";
 import LoginPortal from "./LoginPortal";
 
 export default function App() {
@@ -12,7 +12,7 @@ export default function App() {
                      <Route path = "/" element = {<Home />} />
                      <Route exact path = "/login" element = {<LoginPortal/>} />
                      <Route path = "Hardware" element ={<Hardware />} />
-                     <Route path = "Project" element = {<Project/>} />
+                     <Route path = "Project" element = {<Project_Board/>} />
                   </Routes>
                </div>
 
