@@ -647,7 +647,7 @@ function DisplayMetaData()
     <>
       <h2> Display a Dataset Metadata</h2>
       <div>
-          <h3>Enter the projectid, the hardware set name and quantity of hardware to request/return</h3>
+          <h3>Enter the Dataset number: (successful loads take about 3-4 seconds)</h3>
           <input ref = {datasetNumField} type = "text" placeholder = "Enter the number(1-5) of the dataset" size = "26"></input>
         </div>
         <div>
