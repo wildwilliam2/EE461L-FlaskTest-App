@@ -480,43 +480,6 @@ function RemoveProject()
 }
 
 
-/* Gets the data associated with a given project*/
-function GetProject()
-{
-  const [serverResponse, setServerResponse] = useState("No Response Yet");
-  const namefield = useRef();
-  async function sendCredentials()
-  {
-    let id = namefield.current.value;
-    console.log("The id of the projec to get is : " + id);
-    let dict = {
-      method : "POST",
-      body : JSON.stringify({
-        id : id
-      })
-    };
-    let res = await fetch("/getProject" , dict);
-    let responseJson = await res.json();
-
-    let name = responseJson['name'];
-    let projectid = responseJson["projectid"];
-    let des = responseJson["description"];
-    setServerResponse("The name: " + name + " The project id: " + projectid + " THe description: " + des);
-  }
-  return(
-    <>
-      <h2>Get the data of the project</h2>
-      <div>
-          <h3>Enter the project id</h3>
-          <input ref = {namefield} type = "text" placeholder = "Enter a project id" size = "21"></input>
-        </div>
-        <div>
-          <button onClick = {() => sendCredentials()}>Enter</button>
-         <label>{serverResponse}</label>
-      </div>
-    </>
-  );
-}
 
 /* Moves hardware to and from a given project*/
 function CheckoutToProject()
@@ -651,12 +614,101 @@ function DisplayMetaData()
           <input ref = {datasetNumField} type = "text" placeholder = "Enter the number(1-5) of the dataset" size = "26"></input>
         </div>
         <div>
-          <button onClick = {() => requestMetaData()}>Enter to return the amount</button>
+          <button onClick = {() => requestMetaData()}>Enter</button>
       </div>
       <label>{serverResponse}</label>
       
     </>
   );
+}
+function GetHW()
+{
+  const [serverResponse, setServerResponse] = useState("No Response Yet");
+  const nameField = useRef();
+
+  async function requestMetaData()
+  {
+    let name = nameField.current.value;
+    console.log("The hwset name requested was: " + name);
+    /* Create the HTTP request dict*/
+    let dict = {
+      method : "POST",
+      body : JSON.stringify({
+        name : name
+      })
+    };
+    let res = await fetch("/getHardwareSet" , dict);
+    let responseJson = await res.json();
+
+    /* If the errorcode signal failure, print nothing*/
+    if(responseJson['errorcode'] != 0)
+    {
+      setServerResponse("Retrieval Failure");
+      return;
+    }
+    console.log(responseJson);
+    let response = "Name: " + responseJson['name'] + " Capacity: " + responseJson['capacity'] + " Avail: " + responseJson["availability"];
+    setServerResponse(response);
+  }
+  return(
+    <>
+      <h2> Get hardware set data</h2>
+      <div>
+          <h3>Enter the name of the hardware set you want data from</h3>
+          <input ref = {nameField} type = "text" placeholder = "Name of the hwset" size = "26"></input>
+        </div>
+        <div>
+          <button onClick = {() => requestMetaData()}>Enter</button>
+      </div>
+      <label>{serverResponse}</label>
+      
+    </>
+  );
+}
+
+
+
+/* Gets the data associated with a given project*/
+function GetProject()
+{
+  const [serverResponse, setServerResponse] = useState("No Response Yet");
+  const namefield = useRef();
+  async function sendCredentials()
+  {
+    let id = namefield.current.value;
+    console.log("The id of the projec to get is : " + id);
+    let dict = {
+      method : "POST",
+      body : JSON.stringify({
+        id : id
+      })
+    };
+    let res = await fetch("/getProject" , dict);
+    let responseJson = await res.json();
+    if(responseJson['errorcode'] != 0)
+    {
+      setServerResponse("Fialure in retreival");
+      return;
+    }
+    let name = responseJson['name'];
+    let projectid = responseJson['projectid'];
+    let des = responseJson['description'];
+    setServerResponse("The name: " + name + " The project id: " + projectid + " THe description: " + des);
+  }
+  return(
+    <>
+      <h2>Get the data of the project</h2>
+      <div>
+          <h3>Enter the project id</h3>
+          <input ref = {namefield} type = "text" placeholder = "Enter a project id" size = "21"></input>
+        </div>
+        <div>
+          <button onClick = {() => sendCredentials()}>Enter</button>
+         <label>{serverResponse}</label>
+      </div>
+    </>
+  );
+  
 }
 
 
@@ -667,15 +719,29 @@ function App() {
       <h2>Using MongoDB Compass check here:</h2>
       <h3>{"mongodb+srv://avengineers461L:MwycDXNBxKObOc3I@cluster0.s12ua.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"}</h3>
       <AddUsers/>
+      <br/>
       <RemoveUsers/>
+      <br/>
       <ValidateUsers/>
+      <br/>
       <AddHW/>
+      <br/>
+      <GetHW/>
+      <br/>
       <RequestResources/>
+      <br/>
       <ReturnResources/>
+      <br/>
       <RemoveHW/>
+      <br/>
       <CreateProject/>
+      <br/>
+      <GetProject/>
+      <br/>
       <RemoveProject/>
+      <br/>
       <CheckoutToProject/>
+      <br/>
       <DisplayMetaData/>
     </>
   );
